@@ -1,0 +1,79 @@
+shader_type spatial;
+// Prevent the quad from being affected by lighting and fog. This also improves performance.
+render_mode unshaded, fog_disabled;
+
+uniform sampler2D depth_texture : hint_depth_texture;
+
+struct Ray
+{
+    vec3 origin;
+    vec3 direction;
+    float step_size;
+    int steps;
+};
+
+float sdfSphere(vec3 origin, float radius, vec3 position)
+{
+    return distance(origin, position) - radius;
+}
+
+void vertex() {
+  POSITION = vec4(VERTEX.xy, 1.0, 1.0);
+}
+
+void fragment() {
+    float depth = texture(depth_texture, SCREEN_UV).x;
+    vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, depth);
+    vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
+    view.xyz /= view.w;
+    float linear_depth = -view.z;
+
+    vec4 world = INV_VIEW_MATRIX * INV_PROJECTION_MATRIX * vec4(SCREEN_UV * 2.0 - 1.0, 0.0, 1.0);
+    vec3 world_position = world.xyz / world.w;
+
+    vec4 camera_world = INV_VIEW_MATRIX * INV_PROJECTION_MATRIX * vec4(0.0, 0.0, 1.0, 1.0);
+    vec3 camera_world_position = camera_world.xyz / camera_world.w;
+
+    // Visualize linear depth
+    // ALBEDO.rgb = vec3(fract(linear_depth));
+
+    // Visualize world coordinates
+    // ALBEDO.rgb = fract(world_position).xyz;
+
+    Ray ray;
+    ray.origin = camera_world_position;
+    ray.direction = normalize(world_position - ray.origin);
+    ray.step_size = 0.1;
+    ray.steps = 1000;
+
+    ALBEDO.rgb = vec3((ray.direction + 1.0) / 2.0);
+    // ALBEDO.rgb = vec3(fract(depth));
+    // ALBEDO.rgb = vec3(SCREEN_UV, 0.0);
+
+    bool inside_sphere = false;
+
+    vec3 current_ray_position = ray.origin;
+    for (int i = 0; i < ray.steps; i++)
+    {
+        // vec3 current_ray_position = ray.origin + ray.direction * ray.step_size * float(i);
+
+        // inside_sphere = sdfSphere(vec3(0.0), 1.0, current_ray_position) < 0.0;
+
+        inside_sphere = length(current_ray_position) < 1.0;
+
+        // ALBEDO.rgb = vec3(sdfSphere(vec3(0.0), 1.0, current_ray_position));
+        if (inside_sphere)
+        {
+            break;
+        }
+        current_ray_position += ray.direction * ray.step_size;
+    }
+
+    // vec3 c = vec3(sdfSphere(vec3(0,0,0), 1.0, ray.origin + ray.direction * 2.0));
+    // ALBEDO = c;
+
+    if (!inside_sphere)
+        ALBEDO.rgb = vec3(0.5,1.0,0.5);
+    else
+        ALBEDO.rgb = vec3(1.0,0.5,0.5);
+}

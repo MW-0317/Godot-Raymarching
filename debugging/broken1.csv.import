@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://den7e6xhrg7x6"
+
+[deps]
+
+files=["res://debugging/broken1.Value.translation", "res://debugging/broken1.Type.translation", "res://debugging/broken1.Offset.translation", "res://debugging/broken1.Range.translation", "res://debugging/broken1.Set.translation", "res://debugging/broken1.Binding.translation", "res://debugging/broken1.Descriptor Type.translation", "res://debugging/broken1.Buffer.translation"]
+
+source_file="res://debugging/broken1.csv"
+dest_files=["res://debugging/broken1.Value.translation", "res://debugging/broken1.Type.translation", "res://debugging/broken1.Offset.translation", "res://debugging/broken1.Range.translation", "res://debugging/broken1.Set.translation", "res://debugging/broken1.Binding.translation", "res://debugging/broken1.Descriptor Type.translation", "res://debugging/broken1.Buffer.translation"]
+
+[params]
+
+compress=true
+delimiter=0
