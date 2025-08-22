@@ -21,10 +21,10 @@ func _ready():
     modified_time = FileAccess.get_modified_time("./shaders/raymarch.gdshader")
 
 func _process(delta: float):
-    var current_time = FileAccess.get_modified_time("./shaders/raymarch.gdshader")
-    if current_time != modified_time:
-        modified_time = current_time
-        print("File changed!")
+    # var current_time = FileAccess.get_modified_time("./shaders/raymarch.gdshader")
+    # if current_time != modified_time:
+    #     modified_time = current_time
+    #     print("File changed!")
         #get_tree().change_scene_to_file("res://main.tscn")
 
     # var t = Time.get_ticks_msec() as float / 1000
@@ -52,13 +52,6 @@ func _process(delta: float):
     var forward = main_camera.get_global_transform().basis.z
     forward += Vector3(1.0, 1.0, 1.0)
     forward /= Vector3(2.0, 2.0, 2.0)
-
-    # var a = INVERSE_CAMERA_PROJECTION * Vector4(2.0 * 0.5 - 1.0, 2.0 * 0.5 - 1.0, 1.0, 1.0)
-
-    # var test = INVERSE_VIEW_MATRIX * a
-    # test = test.normalized()
-
-    
 
     ImGui.Begin("Raymarch")
     ImGui.SliderFloat("Distance", distance_ref, 1.0, 10.0)
