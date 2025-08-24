@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://2q1dm6hyhldy"]
+
+[ext_resource type="PackedScene" uid="uid://dqnw7l5vg1uft" path="res://prefabs/RaymarchVolume.tscn" id="1_ibxlc"]
+
+[node name="Blackhole" type="Node3D"]
+
+[node name="Raymarch Volume" parent="." instance=ExtResource("1_ibxlc")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)

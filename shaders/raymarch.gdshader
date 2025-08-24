@@ -23,41 +23,21 @@ float sdfSphere(vec3 origin, float radius, vec3 position)
 }
 
 void vertex() {
-    // Called for every vertex the material is visible on.
 }
 
 void fragment() {
-    // Called for every pixel the material is visible on.
-
-    Ray ray;
-    vec2 suv = SCREEN_UV;
-    // suv.y = 1.0 - suv.y;
-    // suv.x = 1.0 - suv.x;
-    vec4 pos = vec4(2.0 * suv - 1.0, 1.0, 1.0);
-    vec4 canvas_position = INVERSE_VIEW_MATRIX * INVERSE_CAMERA_PROJECTION * pos;
+    vec4 canvas_position = INVERSE_VIEW_MATRIX * INVERSE_CAMERA_PROJECTION * vec4(2.0 * SCREEN_UV - 1.0, 0.0, 1.0);
     vec3 canvas_world = canvas_position.xyz / canvas_position.w;
-    // canvas_world = -canvas_world;
-    // // canvas_world.x = -canvas_world.x;
-    // canvas_world.z = -canvas_world.z;
 
-    vec4 camera_world = INVERSE_VIEW_MATRIX * INVERSE_CAMERA_PROJECTION * vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 camera_world = INVERSE_VIEW_MATRIX * INVERSE_CAMERA_PROJECTION * vec4(0.0, 0.0, 1.0, 1.0);
     vec3 camera_world_position = camera_world.xyz / camera_world.w;
 
-    // camera_world_position = (INVERSE_VIEW_MATRIX * vec4(0,0,0,1)).xyz;
+    Ray ray;
     ray.origin = camera_world_position;
     ray.direction = normalize(canvas_world - ray.origin);
-    // ray.direction.x = -ray.direction.x;
-    ray.steps = MAX_STEPS;
     ray.step_size = MAX_STEP_SIZE;
+    ray.steps = MAX_STEPS;
 
-    // COLOR = vec4(normalize(FRAGCOORD.xyz), 1.0);
-    // COLOR = vec4(ray.direction, 1.0);
-    // COLOR = vec4(0.0,canvas_position.y, 0.0, 1.0);
-    // COLOR = vec4(0.0,ray.direction.yz, 1.0);
-    // COLOR = vec4(SCREEN_UV, 1.0,1.0);
-    // COLOR = vec4((ray.direction + 1.0) / 2.0, alpha);
-
-    // COLOR = vec4(fract(canvas_world).xyz, alpha);
     COLOR = vec4((ray.direction + 1.0) / 2.0, alpha);
 
     bool inside_sphere = false;
@@ -65,10 +45,6 @@ void fragment() {
     vec3 current_ray_position = ray.origin;
     for (int i = 0; i < ray.steps; i++)
     {
-        // vec3 current_ray_position = ray.origin + ray.direction * ray.step_size * float(i);
-
-        // inside_sphere = sdfSphere(vec3(0.0), 1.0, current_ray_position) < 0.0;
-
         inside_sphere = length(current_ray_position) < 1.0;
 
         // ALBEDO.rgb = vec3(sdfSphere(vec3(0.0), 1.0, current_ray_position));
@@ -79,14 +55,10 @@ void fragment() {
         current_ray_position += ray.direction * ray.step_size;
     }
 
-    // vec4 c = vec4(sdfSphere(vec3(0,0,0), 1.0, ray.origin + ray.direction * test_distance));
-    // c.w = alpha;
-    // COLOR = c;
-
-    // if (!inside_sphere)
-    //     COLOR = vec4(0.5,1.0,0.5, alpha);
-    // else
-    //     COLOR = vec4(1.0,0.5,0.5, alpha);
+    if (!inside_sphere)
+        COLOR = vec4(0.5,1.0,0.5, alpha);
+    else
+        COLOR = vec4(1.0,0.5,0.5, alpha);
 }
 
 //void light() {
