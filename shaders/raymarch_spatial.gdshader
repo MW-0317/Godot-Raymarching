@@ -34,6 +34,8 @@ void fragment() {
     ray.step_size = 0.1;
     ray.steps = 1000;
 
+    ALBEDO.rgb = vec3((ray.direction + 1.0) / 2.0);
+
     bool inside_sphere = false;
 
     vec3 current_ray_position = ray.origin;

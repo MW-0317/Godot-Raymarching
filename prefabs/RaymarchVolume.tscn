@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://dqnw7l5vg1uft"]
+
+[ext_resource type="Shader" uid="uid://bop6a4sycd3gy" path="res://shaders/raymarch_volume.gdshader" id="1_ejicf"]
+[ext_resource type="Script" uid="uid://014ikx2q3ipn" path="res://scripts/RaymarchVolume.gd" id="2_2ov65"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
+render_priority = 0
+shader = ExtResource("1_ejicf")
+shader_parameter/MAX_STEPS = 0
+shader_parameter/MAX_STEP_SIZE = 0.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_7mycd"]
+lightmap_size_hint = Vector2i(104, 156)
+material = SubResource("ShaderMaterial_lquwl")
+flip_faces = true
+
+[node name="Raymarch Volume" type="MeshInstance3D"]
+mesh = SubResource("BoxMesh_7mycd")
+script = ExtResource("2_2ov65")
+max_steps = 1000
+max_step_size = 0.1

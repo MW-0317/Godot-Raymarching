@@ -38,6 +38,8 @@ void fragment() {
     ray.step_size = MAX_STEP_SIZE;
     ray.steps = MAX_STEPS;
 
+    COLOR = vec4((ray.direction + 1.0) / 2.0, alpha);
+
     bool inside_sphere = false;
 
     vec3 current_ray_position = ray.origin;
