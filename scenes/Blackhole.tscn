@@ -1,8 +1,29 @@
-[gd_scene load_steps=2 format=3 uid="uid://2q1dm6hyhldy"]
+[gd_scene load_steps=6 format=3 uid="uid://2q1dm6hyhldy"]
 
 [ext_resource type="PackedScene" uid="uid://dqnw7l5vg1uft" path="res://prefabs/RaymarchVolume.tscn" id="1_ibxlc"]
+[ext_resource type="Material" uid="uid://crw2gexr2p5c0" path="res://resources/space_panorama.tres" id="2_itpj1"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ibxlc"]
+
+[sub_resource type="Sky" id="Sky_itpj1"]
+sky_material = ExtResource("2_itpj1")
+
+[sub_resource type="Environment" id="Environment_ibxlc"]
+background_mode = 2
+sky = SubResource("Sky_itpj1")
 
 [node name="Blackhole" type="Node3D"]
 
 [node name="Raymarch Volume" parent="." instance=ExtResource("1_ibxlc")]
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+max_steps = 2000
+max_distance = 50.0
+gravity_constant = 10.0
+panorama = ExtResource("2_itpj1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("PlaneMesh_ibxlc")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ibxlc")

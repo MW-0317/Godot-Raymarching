@@ -1,0 +1,6 @@
+[gd_resource type="PanoramaSkyMaterial" load_steps=2 format=3 uid="uid://crw2gexr2p5c0"]
+
+[ext_resource type="Texture2D" uid="uid://dao311g5rfcxl" path="res://resources/starmap_2020_4k.exr" id="1_kudnn"]
+
+[resource]
+panorama = ExtResource("1_kudnn")
