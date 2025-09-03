@@ -183,11 +183,10 @@ void fragment() {
     {
         inside_box = sdfBox(current_ray_position, vec3(SIZE, SIZE / 100.0, SIZE)) < 0.0;
         inside_sphere = sdfSphere(vec3(0.0), SIZE, current_ray_position) < 0.0;
-
-        inside_bh = sdfSphere(vec3(0.0), 0.1, current_ray_position) < 0.0;
+        inside_bh = sdfSphere(vec3(0.0), 0.3, current_ray_position) < 0.0;
         if (inside_bh)
         {
-            pixel_color = vec4(0.0);
+            pixel_color.a = 0.0;
             break;
         }
 
@@ -216,6 +215,10 @@ void fragment() {
             light_ray.origin += ign(ign_light * 1e8) * light_ray.step_size * light_ray.direction;
 
             vec4 luminance = vec4(light_color, INTENSITY / pow(light_ray.distance, DISTANCE_POWER));
+
+            // float cos_theta = 3.0 * (1.0 + pow(dot(light_ray.direction, ray.direction), 2.0)) / (16.0 * PI);
+            // luminance *= cos_theta;
+
             vec3 current_light_ray_position = light_ray.origin;
             int j = 0;
             for (; light_ray.step_size * float(j) < light_ray.distance; j++)
@@ -234,6 +237,9 @@ void fragment() {
 
                 // Luminance??
                 vec4 to_light_luminance = vec4(light_color, INTENSITY / pow(light_ray.distance - light_ray.step_size * float(j), DISTANCE_POWER));
+
+                // float cos_theta = 3.0 * (1.0 + pow(1.0, 2.0)) / (16.0 * PI);
+                // to_light_luminance *= cos_theta;
 
                 luminance.rgb += to_light_scattering * to_light_luminance.rgb * to_light_luminance.a * luminance.a * light_ray.step_size;
                 luminance.a *= to_light_transmittance;
