@@ -1,71 +1,49 @@
-[gd_scene load_steps=11 format=3 uid="uid://cg7vtsmv22c0j"]
+[gd_scene load_steps=10 format=3 uid="uid://c6xsc6ntdgnyb"]
 
-[ext_resource type="Script" uid="uid://ckni8p1r8vvcf" path="res://ShaderModification.gd" id="1_0xm2m"]
-[ext_resource type="Shader" uid="uid://bvjtnq6aal50o" path="res://shaders/raymarch.gdshader" id="1_ig7tw"]
-[ext_resource type="Shader" uid="uid://c5ipvt8q21u0e" path="res://shaders/raymarch_spatial.gdshader" id="3_h2yge"]
-[ext_resource type="Shader" uid="uid://bop6a4sycd3gy" path="res://shaders/raymarch_volume.gdshader" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://014ikx2q3ipn" path="res://scripts/RaymarchVolume.gd" id="1_kj6u4"]
+[ext_resource type="Shader" uid="uid://bop6a4sycd3gy" path="res://shaders/raymarch_volume.gdshader" id="1_ryfll"]
+[ext_resource type="Texture2D" uid="uid://dao311g5rfcxl" path="res://resources/starmap_2020_4k.exr" id="2_y7wfh"]
+[ext_resource type="Material" uid="uid://crw2gexr2p5c0" path="res://resources/space_panorama.tres" id="3_gkhbp"]
+[ext_resource type="Script" uid="uid://dsn4t4scrdscs" path="res://scripts/RaymarchObject.gd" id="3_qttku"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0xm2m"]
-shader = ExtResource("1_ig7tw")
-shader_parameter/MAX_STEPS = 0
-shader_parameter/MAX_STEP_SIZE = 0.0
-shader_parameter/CAMERA_POSITION = Vector3(0, 0, 0)
-shader_parameter/INVERSE_VIEW_MATRIX = Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-shader_parameter/INVERSE_CAMERA_PROJECTION = Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-shader_parameter/test_distance = 0.0
-shader_parameter/alpha = 0.0
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gkhbp"]
 
-[sub_resource type="Environment" id="Environment_h2yge"]
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_y7wfh"]
+noise = SubResource("FastNoiseLite_gkhbp")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1bvp3"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qttku"]
 render_priority = 0
-shader = ExtResource("3_h2yge")
+shader = ExtResource("1_ryfll")
+shader_parameter/light_color = Vector3(0, 0, 0)
+shader_parameter/light_position = Vector3(0, 0.935632, 0)
+shader_parameter/fog_color = Vector3(0, 0, 0)
+shader_parameter/noise_texture = SubResource("NoiseTexture3D_y7wfh")
+shader_parameter/panorama = ExtResource("2_y7wfh")
+shader_parameter/MAX_STEPS = 1000
+shader_parameter/MIN_STEP_SIZE = 0.1
+shader_parameter/MAX_DISTANCE = 1000.0
 
-[sub_resource type="QuadMesh" id="QuadMesh_lquwl"]
-material = SubResource("ShaderMaterial_1bvp3")
-flip_faces = true
-size = Vector2(2, 2)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
-render_priority = 0
-shader = ExtResource("4_1bvp3")
-
-[sub_resource type="BoxMesh" id="BoxMesh_7mycd"]
-lightmap_size_hint = Vector2i(104, 156)
-material = SubResource("ShaderMaterial_lquwl")
+[sub_resource type="BoxMesh" id="BoxMesh_du165"]
+material = SubResource("ShaderMaterial_qttku")
 flip_faces = true
 
-[node name="Node3D" type="Node3D" node_paths=PackedStringArray("main_camera", "color_rect", "slider")]
-script = ExtResource("1_0xm2m")
+[node name="Raymarch" type="Node3D"]
+
+[node name="RaymarchVolume" type="MeshInstance3D" parent="." node_paths=PackedStringArray("light")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("BoxMesh_du165")
+skeleton = NodePath("")
+script = ExtResource("1_kj6u4")
 max_steps = 1000
-max_step_size = 0.1
-material = SubResource("ShaderMaterial_0xm2m")
-main_camera = NodePath("Camera3D")
-color_rect = NodePath("CanvasLayer/ColorRect")
-slider = NodePath("")
+min_step_size = 0.1
+max_distance = 1000.0
+panorama = ExtResource("3_gkhbp")
+light = NodePath("../OmniLight3D")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="RaymarchObject" type="Node3D" parent="RaymarchVolume"]
+script = ExtResource("3_qttku")
+noise_texture = SubResource("NoiseTexture3D_y7wfh")
+metadata/_custom_type_script = "uid://dsn4t4scrdscs"
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
-material = SubResource("ShaderMaterial_0xm2m")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.69724)
-visible = false
-environment = SubResource("Environment_h2yge")
-
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
-visible = false
-flip_faces = true
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-visible = false
-mesh = SubResource("QuadMesh_lquwl")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-mesh = SubResource("BoxMesh_7mycd")
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.935632, 0)
