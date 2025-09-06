@@ -21,6 +21,11 @@ vec2 forwardEquiProjection(vec3 direction)
     return spherical.yx;
 }
 
+float ign(vec2 pixelCoords)
+{
+    return mod(52.9829189f * mod(0.06711056f*pixelCoords.x + 0.00583715f*pixelCoords.y, 1.0f), 1.0f);
+}
+
 void vertex() {
     // Called for every vertex the material is visible on.
 }
@@ -43,8 +48,8 @@ void fragment() {
     vec3 camera_world_position = camera_world.xyz / camera_world.w;
 
     Ray ray;
-    ray.origin = camera_world_position;
-    ray.direction = normalize(world_position - ray.origin);
+    ray.direction = normalize(world_position - camera_world_position);
+    ray.origin = camera_world_position + ign(FRAGCOORD.xy) * ray.direction;
     ray.position = ray.origin;
     ray.step_size = MIN_STEP_SIZE;
     ray.steps = 0;

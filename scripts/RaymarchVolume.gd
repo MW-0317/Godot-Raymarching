@@ -32,7 +32,6 @@ func _ready():
     material = mesh.surface_get_material(0)
 
 func _process(_delta: float):
-    material = mesh.surface_get_material(0)
     set_shader_parameters(material)
    
 func set_shader_parameters(m: Material):

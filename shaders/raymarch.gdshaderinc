@@ -38,13 +38,18 @@ float sdfBox(vec3 position, vec3 cube_corner)
 
 vec4 sampleDensity(Ray ray, out bool inside_sdf)
 {
-    inside_sdf = sdfSphere(vec3(0.0), 1.0, ray.position) < 0.0;
-    if (inside_sdf)
+    // inside_sdf = sdfSphere(vec3(0.0), 1.0, ray.position) < 0.0;
+    inside_sdf = sdfBox(ray.position, vec3(3.0)) < 0.0;
+    if (!inside_sdf)
         return vec4(0.0);
 
-    float density = texture(noise_texture, mod(ray.position, 1.0)).r;
-    // density = 0.2;
-    return vec4(fog_color, density);
+    vec3 position = ray.position;
+    position.y -= TIME / 3.0;
+    float noise = texture(noise_texture, mod((position), 1.0)).r;
+    // density = smoothstep(density, 0.0, distance(ray.position, vec3(0.0)));
+    float falloff = smoothstep(0.0, 1.0, length(ray.position) - noise * 1.0);
+    float density = noise * (1.0 - falloff);
+    return vec4(fog_color, density * 10.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,6 +76,7 @@ vec4 raymarch(Ray ray, Light light)
 {
     ray.steps = 0;
     vec4 pixel_color = vec4(vec3(0.0), 1.0);
+    float test_color = 0.0;
     while (ray.steps < MAX_STEPS && ray.distance < MAX_DISTANCE)
     {
         bool inside_sdf;
@@ -80,6 +86,30 @@ vec4 raymarch(Ray ray, Light light)
 
         vec3 luminance = light.color;
 
+        Ray light_ray;
+        light_ray.origin = ray.position;
+        light_ray.direction = normalize(light.position);
+        light_ray.position = light_ray.origin;
+        light_ray.step_size = MIN_STEP_SIZE;
+        light_ray.steps = 0;
+        light_ray.distance = 0.0;
+        while (light_ray.steps < MAX_STEPS && light_ray.distance < MAX_DISTANCE)
+        {
+            float density = sampleDensity(light_ray, inside_sdf).a;
+            if (!inside_sdf)
+                break;
+
+            luminance *= exp(-density * light_ray.step_size);
+            test_color += 1.0;
+
+            light_ray.position += light_ray.direction * light_ray.step_size;
+            light_ray.distance += light_ray.step_size;
+            light_ray.steps++;
+        }
+
+        float r = (3.0 / 16.0 / PI) * (1.0 + pow(dot(light_ray.direction, ray.direction), 2));
+        luminance *= r;
+
         pixel_color.rgb += scattering * luminance * pixel_color.a * ray.step_size;
         pixel_color.a *= transmittance;
 
@@ -87,6 +117,7 @@ vec4 raymarch(Ray ray, Light light)
         ray.distance += ray.step_size;
         ray.steps++;
     }
-
+    
+    // return vec4(vec3(test_color/1e5), 0.0);
     return pixel_color;
 }

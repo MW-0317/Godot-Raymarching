@@ -6,22 +6,31 @@
 [ext_resource type="Material" uid="uid://crw2gexr2p5c0" path="res://resources/space_panorama.tres" id="3_gkhbp"]
 [ext_resource type="Script" uid="uid://dsn4t4scrdscs" path="res://scripts/RaymarchObject.gd" id="3_qttku"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_gkhbp"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_y7wfh"]
+noise_type = 2
+frequency = 0.0054
+cellular_distance_function = 1
 
 [sub_resource type="NoiseTexture3D" id="NoiseTexture3D_y7wfh"]
-noise = SubResource("FastNoiseLite_gkhbp")
+width = 128
+height = 128
+depth = 128
+invert = true
+seamless = true
+seamless_blend_skirt = 0.531
+noise = SubResource("FastNoiseLite_y7wfh")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qttku"]
 render_priority = 0
 shader = ExtResource("1_ryfll")
 shader_parameter/light_color = Vector3(0, 0, 0)
-shader_parameter/light_position = Vector3(0, 0.935632, 0)
+shader_parameter/light_position = Vector3(0, 1, 0)
 shader_parameter/fog_color = Vector3(0, 0, 0)
 shader_parameter/noise_texture = SubResource("NoiseTexture3D_y7wfh")
 shader_parameter/panorama = ExtResource("2_y7wfh")
-shader_parameter/MAX_STEPS = 1000
+shader_parameter/MAX_STEPS = 500
 shader_parameter/MIN_STEP_SIZE = 0.1
-shader_parameter/MAX_DISTANCE = 1000.0
+shader_parameter/MAX_DISTANCE = 50.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_du165"]
 material = SubResource("ShaderMaterial_qttku")
@@ -34,11 +43,12 @@ transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0)
 mesh = SubResource("BoxMesh_du165")
 skeleton = NodePath("")
 script = ExtResource("1_kj6u4")
-max_steps = 1000
+max_steps = 500
 min_step_size = 0.1
-max_distance = 1000.0
+max_distance = 50.0
 panorama = ExtResource("3_gkhbp")
 light = NodePath("../OmniLight3D")
+fog_color = Color(1, 1, 1, 1)
 
 [node name="RaymarchObject" type="Node3D" parent="RaymarchVolume"]
 script = ExtResource("3_qttku")
@@ -46,4 +56,4 @@ noise_texture = SubResource("NoiseTexture3D_y7wfh")
 metadata/_custom_type_script = "uid://dsn4t4scrdscs"
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.935632, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
