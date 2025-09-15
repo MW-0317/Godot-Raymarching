@@ -1,3 +1,35 @@
-[gd_scene format=3 uid="uid://b0vpikkkf0grr"]
+[gd_scene load_steps=8 format=3 uid="uid://b0vpikkkf0grr"]
+
+[ext_resource type="Script" uid="uid://bgy44eeur4dis" path="res://scripts/Raymarch.gd" id="1_kj6u4"]
+[ext_resource type="RDShaderFile" uid="uid://sbty4510ex1t" path="res://shaders/raymarch.glsl" id="2_ryfll"]
+
+[sub_resource type="Environment" id="Environment_kj6u4"]
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_ryfll"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("1_kj6u4")
+shader_file = ExtResource("2_ryfll")
+metadata/_custom_type_script = "uid://bgy44eeur4dis"
+
+[sub_resource type="Compositor" id="Compositor_qttku"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_ryfll")])
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ryfll"]
+albedo_color = Color(1, 0.52549, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qttku"]
+material = SubResource("StandardMaterial3D_ryfll")
 
 [node name="Raymarch" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_kj6u4")
+compositor = SubResource("Compositor_qttku")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_qttku")
